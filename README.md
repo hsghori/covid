@@ -6,11 +6,18 @@ simple graph of Covid cases by time for a set of states.
 To run:
 
 ```
+usage: process_data.py [-h] --states STATES
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --states STATES  Comma delimited string of states
+```
+
+### Virtual env setup
+The dependencies are contained in the `requirements.txt file.
+
+```Bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python process_data.py
 ```
-
-THe plot should be available in `plots/covid_plot.png`. You can customize the states that you want to consider by
-updating the list of states in `process_data.py` file. 
