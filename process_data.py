@@ -10,7 +10,8 @@ def main(states=None):
         df_state = df[df.state == state]
         plt.plot(df_state.date, np.log2(df_state.cases), label=state)
     x_ticks, _ = plt.xticks()
-    plt.xticks(x_ticks[::10], rotation=45)
+    plt.xticks(x_ticks[::7], rotation=45)
+    plt.grid(axis='x')
     plt.title('Covid cases by date')
     plt.ylabel('Log2 of # of cases')
     plt.xlabel('Date')
