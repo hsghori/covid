@@ -15,6 +15,7 @@ def main(states=None):
         dates = df_state.date.to_numpy()
         if len(dates) > len(longest_dates):
             longest_dates = dates
+
     x_ticks = list(range(len(longest_dates)))[::7]
     labels = longest_dates[x_ticks]
     axes[0].set_xticks(x_ticks)
