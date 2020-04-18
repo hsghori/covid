@@ -12,13 +12,27 @@ const SCALES = {
     'unscaled': {text: 'Unscaled', fn: v => v},
 };
 
+const colors = [
+    'green', 'red', 'blue', 'yellow', 'violet', 'orange', 'pink',
+]
+
 
 const Chart = (props) => {
     const scale = SCALES[props.scale];
 
     const getLines = () => {
-        return props.states.map((state) => {
-            return <Line type='monotone' dot={false} activeDot={true} key={state} dataKey={state} />
+        return props.states.map((state, idx) => {
+            return (
+                <Line
+                    type='monotone'
+                    dot={false}
+                    activeDot={true}
+                    key={state}
+                    dataKey={state}
+                    label={state}
+                    stroke={colors[idx % colors.length]}
+                />
+            );
         });
     }
 
