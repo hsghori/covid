@@ -34,6 +34,11 @@ const useStyles = makeStyles((theme) => createStyles({
   root: {
       height: '100%',
       width: '80%',
+      [theme.breakpoints.down('sm')]: {
+        width: '100%',
+        paddingLeft: 0,
+        paddingRight: 0,
+      },
       marginTop: '16px',
       display: 'flex',
       flexDirection: 'column',
@@ -42,6 +47,9 @@ const useStyles = makeStyles((theme) => createStyles({
   app: {
     width: '80%',
     height: '100%',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+    },
     overflowY: 'auto',
   },
   formControl: {
@@ -59,10 +67,19 @@ const useStyles = makeStyles((theme) => createStyles({
     padding: '16px 16px 40px 16px',
     margin: '32px 0 32px 0',
     flex: 0.75,
+    [theme.breakpoints.down('sm')]: {
+      flex: 1,
+      paddingBottom: '64px',
+    }
   },
   derivativeCheckbox: {
     marginLeft: '8px',
   },
+  filterForm: {
+    [theme.breakpoints.up('sm')]: {
+      flexDirection: 'row',
+    }
+  }
 }));
 
 
@@ -126,7 +143,7 @@ const App = () => {
       return <CircularProgress />
     }
     return (
-      <FormGroup row>
+      <FormGroup className={classes.filterForm}>
         <FormControl className={classes.formControl}>
           <InputLabel>States</InputLabel>
           <Select
@@ -150,7 +167,7 @@ const App = () => {
             {scaleOptions}
           </Select>
         </FormControl>
-        <FormControl className={classes.formControl} row>
+        <FormControl className={classes.formControl}>
           <InputLabel>Window (days)</InputLabel>
           <Select
             value={windowSize}
@@ -170,7 +187,7 @@ const App = () => {
             />
           }
           label={
-            <InputLabel className={classes.checkboxLabel}>Use derivative</InputLabel>
+            <InputLabel className={classes.checkboxLabel}>Show new cases</InputLabel>
           }
         />
       </FormGroup>
@@ -178,9 +195,9 @@ const App = () => {
   }
 
   const getTitle = () => {
-    const modifier = (useDerivative) ? ' New' : '';
+    const modifier = (useDerivative) ? 'New' : 'Cumulative';
     const windowText = `${windowSize} day${(windowSize > 1) ? 's' : ''} window`;
-    return  `${SCALES[scale].text} Number of${modifier} Cases - ${windowText}`;
+    return  `${SCALES[scale].text} Number of ${modifier} Cases - ${windowText}`;
   }
 
   return (
