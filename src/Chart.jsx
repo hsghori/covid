@@ -69,25 +69,25 @@ const Chart = (props) => {
     }
 
     if (props.windowSize > 1) {
-        const squashedData = [];
-        for (let i = 0; i < data.length; i+=props.windowSize) {
+        const smoothedData = [];
+        for (let i = 0; i < data.length; i++) {
             const currObj = {date: data[i].date};
             // eslint-disable-next-line
             props.states.forEach((state) => {
                 let sum = 0;
                 let numElems = 0;
-                for (let j = i; j < i + props.windowSize; j++) {
-                    if (j >= data.length) {
+                for (let j = 0; j < props.windowSize; j++) {
+                    if ((i - j) < 0) {
                         break;
                     }
-                    sum += data[j][state];
+                    sum += data[i - j][state];
                     numElems += 1;
                 }
                 currObj[state] = sum / numElems;
             });
-            squashedData.push(currObj);
+            smoothedData.push(currObj);
         }
-        data = squashedData;
+        data = smoothedData;
     }
 
     return (
