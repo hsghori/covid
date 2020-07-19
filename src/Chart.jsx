@@ -5,10 +5,12 @@ import {
 } from 'recharts';
 
 
+const safeLog = (logFn, value) => value !== 0 ? logFn(value) : value;
+
 const SCALES = {
-    'ln': {text: 'Log base e', fn: Math.log},
-    'log2': {text: 'Log base 2', fn: Math.log2},
-    'log10': {text: 'Log base 10', fn: Math.log10},
+    'ln': {text: 'Log base e', fn: (value) => safeLog(Math.log, value)},
+    'log2': {text: 'Log base 2', fn: (value) => safeLog(Math.log2, value)},
+    'log10': {text: 'Log base 10', fn: (value) => safeLog(Math.log10, value)},
     'unscaled': {text: 'Unscaled', fn: v => v},
 };
 
@@ -16,35 +18,43 @@ const colors = [
     'green', 'red', 'blue', 'yellow', 'violet', 'orange', 'pink',
 ]
 
+const getKey = (state, dataType) => `${state}-${dataType}`;
 
 const Chart = (props) => {
     const scale = SCALES[props.scale];
 
     const getLines = () => {
-        return props.states.map((state, idx) => {
-            return (
-                <Line
-                    type='monotone'
-                    dot={false}
-                    activeDot={true}
-                    key={state}
-                    dataKey={state}
-                    label={state}
-                    stroke={colors[idx % colors.length]}
-                />
-            );
+        const lines = [];
+        props.states.forEach((state, i) => {
+            props.dataType.forEach((dt, j) => {
+                lines.push((
+                    <Line
+                        type='monotone'
+                        dot={false}
+                        activeDot={true}
+                        key={getKey(state, dt)}
+                        dataKey={getKey(state, dt)}
+                        label={`${state} ${dt}`}
+                        stroke={colors[(i * dt.length + j) % colors.length]}
+                    />
+                ));
+            });
         });
+        return lines;
     }
 
     const dataObj = {};
     props.states.forEach((state) => {
         props.statesData[state].forEach((stateData) => {
-            if (stateData.date in dataObj) {
-                dataObj[stateData.date][state] = scale.fn(stateData.cases);
-            } else {
-                dataObj[stateData.date] = {[state]: scale.fn(stateData.cases), date: stateData.date};
-            }
-        })
+            props.dataType.forEach((dt) => {
+                const key = getKey(state, dt);
+                if (stateData.date in dataObj) {
+                    dataObj[stateData.date][key] = scale.fn(stateData[dt]);
+                } else {
+                    dataObj[stateData.date] = {[key]: scale.fn(stateData[dt]), date: stateData.date};
+                }
+            });
+        });
     });
 
     let data = Object.keys(dataObj).sort().map((date) => {
@@ -62,7 +72,10 @@ const Chart = (props) => {
             const prev = (idx > 0) ? data[idx - 1] : data[idx];
             const obj = {date: value.date};
             props.states.forEach((state) => {
-                obj[state] = value[state] - prev[state];
+                props.dataType.forEach((dt) => {
+                    const key = getKey(state, dt);
+                    obj[key] = value[key] - prev[key];
+                });
             });
             return obj;
         });
@@ -106,6 +119,7 @@ const Chart = (props) => {
 Chart.propTypes = {
     states: PropTypes.arrayOf(PropTypes.string).isRequired,
     statesData: PropTypes.object.isRequired,
+    dataType: PropTypes.arrayOf(PropTypes.string).isRequired,
     scale: PropTypes.oneOf(Object.keys(SCALES)).isRequired,
     derivative: PropTypes.bool,
     windowSize: PropTypes.number,
