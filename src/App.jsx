@@ -216,7 +216,7 @@ const App = () => {
                 <Chart
                   states={states}
                   statesData={processedStatesData}
-                  dataType={dataType}
+                  dataTypes={dataType}
                   scale={scale}
                   derivative={useDerivative}
                   windowSize={windowSize}
